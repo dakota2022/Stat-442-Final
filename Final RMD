@@ -1,0 +1,250 @@
+---
+title: "Assignment 10"
+author: "Dakota Alfson"
+date: "10/21/2020"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r, echo = FALSE, warning = FALSE, message = FALSE}
+library(readr)
+library(rcompanion)
+library(moments)
+library(shiny)
+library(dplyr)
+library(plotly)
+library(ggplot2)
+library(corrplot)
+library(shinythemes)
+library(readxl)
+library(GGally)
+```
+
+```{r, echo = FALSE, warning = FALSE, message = FALSE}
+all_years <- read_csv("2015.csv")
+all_years$generosity <- as.numeric(all_years$generosity)
+all_years <- na.omit(all_years)
+all_years$year <- as.factor(all_years$year)
+```
+
+# World Happiness Report
+### This dataset is from Kaggle. 
+
+### "The World Happiness Report is a landmark survey of the state of global happiness." The report lists over 155 countries by their happiness levels. There are 6  factors that contribute to making life evaluations higher per country-- economic production, social support, life expectancy, freedom, absence of government corruption, and generosity. These factors have no impact on the total happiness score for each country, but they do explain why some countries rank higher than others.
+
+```{r, echo = FALSE, warning = FALSE, message = FALSE}
+head(all_years)
+```
+
+```{r, echo = FALSE, warning = FALSE, message = FALSE}
+str(all_years)
+```
+
+```{r, echo = FALSE, warning = FALSE, message = FALSE}
+summary(all_years)
+```
+
+## Data Transformations
+
+```{r, echo = FALSE, warning = FALSE, message = FALSE, fig.show = 'hide'}
+#Log transformations
+all_years$family.log <- log(all_years$family + 1)
+all_years$govt.corrupt.log <- log(all_years$govt.corrupt + 1)
+all_years$generosity.log <- log(all_years$generosity + 1)
+all_years$freedom.log <- log(all_years$freedom + 1)
+
+#Square Root Transformations
+all_years$family.sqrt <- sqrt(all_years$family)
+all_years$govt.corrupt.sqrt <- sqrt(all_years$govt.corrupt)
+all_years$generosity.sqrt <- sqrt(all_years$generosity)
+all_years$freedom.sqrt <- sqrt(all_years$freedom)
+#Cube Root Transformations
+all_years$family.crt <- (all_years$family)^(1/3)
+all_years$govt.corrupt.crt <- (all_years$govt.corrupt)^(1/3)
+all_years$generosity.crt <- (all_years$generosity)^(1/3)
+all_years$freedom.crt <- (all_years$freedom)^(1/3)
+
+#Tukey's Ladder of Powers Transformations
+all_years$family.tukey <- transformTukey(all_years$family)
+all_years$govt.corrupt.tukey <- transformTukey(all_years$govt.corrupt)
+all_years$generosity.tukey <- transformTukey(all_years$family)
+all_years$freedom.tukey <- transformTukey(all_years$freedom)
+```
+
+```{r, echo = FALSE, warning = FALSE, message = FALSE}
+## UI
+# Use a fluid Bootstrap layout
+ui <- navbarPage(theme = shinytheme('readable'), "Distribution of Variables",
+                 
+            navbarMenu("About",
+                       tabPanel("Data Set",
+                                p("The World Happiness Report is a landmark survery of the state of global happiness. The report was first published in 2012. Since then, the report has continued to gain global recognition as governments, organizations, and civil society increasingly use happiness indicators to inform their policy-making decisions. The reports review the state of happiness in the world today and show how the new science of happness explains your personal and national variations in happiness."),
+                                p("The happiness scores and rankings use data from the Gallup World Poll. The scores are based on answers to the pain life evaluation question asked in the poll. The question is known as the Cantril ladder, and it asks respondents to think of a ladder with the best possible life for them being a 10 and the worst possible life being a 0 and to rate their own current lives on that scale. The scores are from nationally representative samples and use the Gallup weights to make the estimates representative. Six factors - economic production, social support, life expectancy, freedom, absence of corruption, and generosity- estimate the extent to which they contribute to making life evaluations higher in each country than in Dystopia. Dystopia is a hypothetical country that has values equal to the world's lowest national averages for each of the six factors. The factors have no impact on the total score reported for each country, but they do explain why some countries rank higher than others.")),
+                       tabPanel("Variables",
+                                p("'country': Country name"),
+                                p("'rank': Rank of country based on the happiness score"),
+                                p("'score': A metric measured by asking the sampled people the question: 'How would you rate your happiness on a scale from 1 to 10?'"),
+                                p("'economy: the extent to which GPD contributes to the calculation of the Happiness Score"),
+                                p("'family': The extent to which social support contributes to the calculation of the Happiness Score"),
+                                p("'life.exp': The extent to which ife expectancy contributes to the calculation of the Happiness Score"),
+                                p("'freedom': The extent to which the freedom to make choices contributes to the calculation of the Happiness Score"),
+                                p("'govt.currpt': The extent to which perception of corruption contributes to the Happiness Score"))),
+            
+            navbarMenu("Happiness Factors",
+                         
+                         tabPanel("Histograms", fluid = TRUE,
+                                  sidebarLayout(sidebarPanel(
+                                      selectInput("cid", "Select a Variable:", 
+                                                  choices = colnames(all_years[c(3:9, 11:26)]))),
+                                  
+                                  mainPanel(plotOutput("happinessPlot")))),
+                         
+                         tabPanel("Linear Models", fluid = TRUE,
+                                  sidebarLayout(sidebarPanel(
+                                      selectInput("cid5", "Select a Variable:", 
+                                                  choices = colnames(all_years[c(3:9, 11:26)]))),
+                                  
+                                  mainPanel(verbatimTextOutput("info"),
+                                  p("The skewness of score and economy are between -0.5 and 0.5, so we do not need to apply any transformations to it."),
+                                  p("Family is outside of the range, so we apply transformations- the Tukey's Ladder of Powers Transformation works best."),
+                                  p("Life.exp is barely within the accepted range. "),
+                                  p("Freedom is outside of the range. Again, the Tukey's Ladder of Powers Transformation works best."),
+                                  p("The Tukey Transformation works best on govt.corrupt."),
+                                  p("The square root transformation works best on generosity."),
+                                  verbatimTextOutput("info1")))),
+                         
+                         tabPanel("Rank Plots", fluid = TRUE,
+                                  sidebarLayout(sidebarPanel(
+                                      textInput("text", "Enter a Specific Country:", 
+                                                value = 'United States'),
+                                      sliderInput("cid2", "Select the number of Happiest Countries:",
+                                                  min = 0, max = 25, value = 10)),
+                                  
+                                  mainPanel(plotlyOutput("happinessPlot2"),
+                                  plotlyOutput("happinessPlot1")))),
+                        
+                         tabPanel("Score Plots", fluid = TRUE,
+                                  sidebarLayout(sidebarPanel(
+                                      selectInput("cid3", "Select a Variable:", 
+                                                  choices = colnames(all_years[c(4:9)]),
+                                                  selected = 'economy'),
+                                      radioButtons("cid4", "Select a Year:",
+                                                   choices = list("2015" = 2015, "2016" = 2016, "2017" = 2017,
+                                                                  "2018" = 2018, "2019" = 2019))),
+                                  mainPanel(plotlyOutput("happinessPlot3")))),
+                        
+                        tabPanel("Correlations", plotOutput("happinessPlot4"), plotOutput("happinessPlot5"))
+            )
+)
+
+## Server
+
+# Define a server for the Shiny app
+server <- function(input, output) {
+    
+    output$happinessPlot <- renderPlot({
+        
+        x    <- all_years[,input$cid]
+        
+        
+        titl <- paste("Histogram of", input$cid, sep = " ")
+        plotNormalHistogram(x, main = titl)
+        
+    })
+    
+    output$info <- renderPrint({
+        
+        x    <- all_years[,input$cid5]
+        
+        titl <- paste("Skewness of:", input$cid5, sep = " ")
+        print(titl)
+        skewness(x)
+    })
+    
+    output$info1 <- renderPrint({
+        
+        x    <- all_years[,input$cid5]
+        
+        fit <- lm(all_years$rank ~ ., data = as.data.frame(x))
+        summary(fit)
+    })    
+    
+    output$happinessPlot1 <- renderPlotly({
+        top_10 <- filter(all_years, rank <= input$cid2)
+        titl <- paste("Top", input$cid2, "Happiest Countries by Year", sep = " ")
+        fig1 <- plot_ly(top_10, x = ~year, y = ~rank, name = ~country,
+               type = 'scatter', mode = 'lines', color= ~country)
+        fig1 <- fig1 %>% layout(title = titl,
+                      xaxis = list(title = NA),
+                      yaxis = list(title = 'Rank', autorange = "reversed"))
+        fig1
+    })
+    
+    output$happinessPlot2 <- renderPlotly({
+        happy_usa <- filter(all_years, country == input$text)
+        titl <- paste(input$text, "Rank by Year", sep = " ")
+        
+        fig2 <- plot_ly(happy_usa, x = ~year, y = ~rank, type = 'scatter', 
+                mode = 'lines', color = 'red',
+                text = ~paste("Score: ", score))
+
+        fig2 <- fig2 %>% layout(title = titl,
+                        xaxis = list(title = NA),
+                        yaxis = list(title = "Rank", autorange = 'reversed'))
+        fig2
+    })
+    
+    output$happinessPlot3 <- renderPlotly({
+        y <- filter(all_years, year == input$cid4)
+        y <- y[,c(1:9)]
+        x <- y[,input$cid3]
+        colnames(x) <- 'input'
+        dfx <- cbind(x,y)
+        titl <- paste(input$cid3, "vs. Score", sep = " ")
+        
+        fig3 <- plot_ly(dfx, x = ~input, y = ~rank, color = ~country,
+                marker = list(size = 7, width = 1),
+                text = ~ paste("Rank: ", rank, '<br>', "Score: ", score, '<br>',
+                               'Economy: ', economy, '<br>', 'Family: ', family,
+                               '<br>', 'Life Expectancy: ', life.exp, '<br>',
+                               'Freedom: ', freedom, '<br>', "Gov't. Corruption: ",
+                               govt.corrupt, '<br>', 'Generosity: ', generosity))
+
+        fig3 <- fig3 %>% layout(Title = titl,
+                       yaxis = list(title = "Overall Rank"),
+                       xaxis = list(title = input$cid3))
+
+        fig3
+    })
+    
+    output$happinessPlot4 <- renderPlot({
+        dfx <- all_years[,c(2:9)]
+        M <- cor(dfx)
+        corrplot(M, method = 'number')
+    })
+    
+    output$happinessPlot5 <- renderPlot({
+        sample_rows <- sample(1:nrow(all_years),50)
+        samp <- all_years[sample_rows,]
+        plot(samp[,2:8], col = "navy", main = "Matrix Scatterplot")
+    })
+}
+
+shinyApp(ui, server)
+```
+
+
+
+```{r}
+sample_rows <- sample(1:nrow(all_years),50)
+samp <- all_years[sample_rows,]
+plot(samp[,2:8], col = "navy", main = "Matrix Scatterplot")
+```
+
+```{r}
+model <- lm(rank ~ score + economy + life.exp + family, data = all_y
+summary(model)
+```
