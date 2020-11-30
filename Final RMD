@@ -75,6 +75,86 @@ all_years$freedom.tukey <- transformTukey(all_years$freedom)
 ```
 
 ```{r, echo = FALSE, warning = FALSE, message = FALSE}
+Asia <- c("Afghanistan", "Armenia", "Azerbaijan", "Bahrain", "Bangladesh", "Bhutan","Brunei", "Cambodia", "China", "Hong Kong", "Hong Kong S.A.R., China", "India", "Indonesia", "Iran", "Iraq", "Israel", "Japan", "Jordan", "Kazakhstan", "Kuwait", "Kyrgyzstan", "Laos", "Lebanon", "Malaysia", "Maldives", "Mongolia", "Myanmar", "Nepal", "North Korea", "Oman", "Pakistan", "Palestine", "Palestinian Territories", "Philippines", "Qatar", "Taiwan Province of China", "Russia", "Saudi Arabia", "Singapore", "South Korea", "Sri Lanka", "Syria", "Taiwan", "Tajikistan", "Thailand", "Turkey", "Turkmenistan", "United Arab Emirates", "Uzbekistan", "Vietnam", "Yemen")
+
+Africa <- c("Algeria", "Angola", "Benin", "Botswana", "Burkina Faso", "Burundi", "Cabo Verde", "Cameroon", "Central African Republic", "Chad", "Comoros", "Congo (Brazzaville)", "Congo (Kinshasa)", "Djibouti", "Egypt", "Eswatini", "Ethiopia", "Gabon", "Gambia", "Ghana", "Guinea", "Ivory Coast", "Kenya", "Lesotho", "Liberia", "Libya", "Madagascar", "Malawi", "Mali", "Mauritania", "Mauritius", "Morocco", "Mozambique", "Namibia", "Niger", "Nigeria", "Rwanda", "Senegal", "Seychelles", "Sierra Leone", "Somalia", "Somaliland Region", "Somaliland region", "South Africa", "South Sudan", "Sudan", "Swaziland", "Tanzania", "Togo", "Tunisia", "Uganda", "Zambia", "Zimbabwe")
+
+North_America <- c("Belize", "Canada", "Costa Rica", "Cuba", "Dominica", "Dominican Republic", "El Salvador", "Grenada", "Guatemala", "Haiti", "Honduras", "Jamaica", "Mexico", "Nicaragua", "Panama", "Puerto Rico", "Trinidad & Tobago", "Trinidad and Tobago", "United States")
+
+South_America <- c("Argentina", "Bolivia", "Brazil", "Chile", "Colombia", "Ecuador", "Guyana", "Paraguay", "Peru", "Suriname", "Uruguay", "Venezuela")
+
+Europe <- c("Albania", "Andorra", "Armenia", "Austria", "Azerbaijan", "Belarus", "Belgium", "Bosnia and Herzegovina", "Bulgaria", "Croatia", "Cyprus", "North Cyprus", "Northern Cyprus", "Czech Republic", "Denmark", "Estonia", "Finland", "France", "Georgia", "Germany", "Greece", "Hungary", "Iceland", "Ireland", "Italy", "Kosovo", "Latvia", "Liechtenstein", "Lithuania", "Luxembourg", "Macedonia", "Malta", "Moldova", "Monaco", "Montenegro", "Netherlands", "North Macedonia", "Norway", "Poland", "Portugal", "Romania", "Romania", "Russia", "San Marino", "Serbia", "Slovakia", "Slovenia", "Spain", "Sweden", "Switzerland", "Turkey", "Ukraine", "United Kingdom")
+
+Australia <- c("Australia", "New Zealand")
+
+all_years <- all_years %>%
+  mutate(region = ifelse(country %in% Asia, "Asia",
+                           ifelse(country %in% Africa, "Africa",
+                             ifelse(country %in% North_America, "North America", 
+                               ifelse(country %in% South_America, "South America",
+                                ifelse(country %in% Europe, "Europe",
+                                  ifelse(country %in% Australia, "Australia",
+"Other")))))))
+```
+
+```{r, echo = FALSE, warning = FALSE, message = FALSE}
+region <- c("Asia", "Africa", "North America", "South America", "Europe", "Australia")
+year <- c(2015, 2016, 2017, 2018, 2019)
+
+# Asia Averages by Year
+avg.2015 <- mean(all_years$score[which(all_years$year== 2015 & all_years$region== 'Asia')])
+avg.2016 <- mean(all_years$score[which(all_years$year== 2016 & all_years$region== 'Asia')])
+avg.2017 <- mean(all_years$score[which(all_years$year== 2017 & all_years$region== 'Asia')])
+avg.2018 <- mean(all_years$score[which(all_years$year== 2018 & all_years$region== 'Asia')])
+avg.2019 <- mean(all_years$score[which(all_years$year== 2019 & all_years$region== 'Asia')])
+asia_avg <- c(avg.2015, avg.2016, avg.2017, avg.2018, avg.2019)
+
+# Africa Averages by Year
+avg.2015 <- mean(all_years$score[which(all_years$year== 2015 & all_years$region== 'Africa')])
+avg.2016 <- mean(all_years$score[which(all_years$year== 2016 & all_years$region== 'Africa')])
+avg.2017 <- mean(all_years$score[which(all_years$year== 2017 & all_years$region== 'Africa')])
+avg.2018 <- mean(all_years$score[which(all_years$year== 2018 & all_years$region== 'Africa')])
+avg.2019 <- mean(all_years$score[which(all_years$year== 2019 & all_years$region== 'Africa')])
+africa_avg <- c(avg.2015, avg.2016, avg.2017, avg.2018, avg.2019)
+
+# North America Averages by Year
+avg.2015 <- mean(all_years$score[which(all_years$year== 2015 & all_years$region== 'North America')])
+avg.2016 <- mean(all_years$score[which(all_years$year== 2016 & all_years$region== 'North America')])
+avg.2017 <- mean(all_years$score[which(all_years$year== 2017 & all_years$region== 'North America')])
+avg.2018 <- mean(all_years$score[which(all_years$year== 2018 & all_years$region== 'North America')])
+avg.2019 <- mean(all_years$score[which(all_years$year== 2019 & all_years$region== 'North America')])
+north_america_avg <- c(avg.2015, avg.2016, avg.2017, avg.2018, avg.2019)
+
+# South America Averages by Year
+avg.2015 <- mean(all_years$score[which(all_years$year== 2015 & all_years$region== 'South America')])
+avg.2016 <- mean(all_years$score[which(all_years$year== 2016 & all_years$region== 'South America')])
+avg.2017 <- mean(all_years$score[which(all_years$year== 2017 & all_years$region== 'South America')])
+avg.2018 <- mean(all_years$score[which(all_years$year== 2018 & all_years$region== 'South America')])
+avg.2019 <- mean(all_years$score[which(all_years$year== 2019 & all_years$region== 'South America')])
+south_america_avg <- c(avg.2015, avg.2016, avg.2017, avg.2018, avg.2019)
+
+# Europe Averages by Year
+avg.2015 <- mean(all_years$score[which(all_years$year== 2015 & all_years$region== 'Europe')])
+avg.2016 <- mean(all_years$score[which(all_years$year== 2016 & all_years$region== 'Europe')])
+avg.2017 <- mean(all_years$score[which(all_years$year== 2017 & all_years$region== 'Europe')])
+avg.2018 <- mean(all_years$score[which(all_years$year== 2018 & all_years$region== 'Europe')])
+avg.2019 <- mean(all_years$score[which(all_years$year== 2019 & all_years$region== 'Europe')])
+europe_avg <- c(avg.2015, avg.2016, avg.2017, avg.2018, avg.2019)
+
+# Australia Averages by Year
+avg.2015 <- mean(all_years$score[which(all_years$year== 2015 & all_years$region== 'Australia')])
+avg.2016 <- mean(all_years$score[which(all_years$year== 2016 & all_years$region== 'Australia')])
+avg.2017 <- mean(all_years$score[which(all_years$year== 2017 & all_years$region== 'Australia')])
+avg.2018 <- mean(all_years$score[which(all_years$year== 2018 & all_years$region== 'Australia')])
+avg.2019 <- mean(all_years$score[which(all_years$year== 2019 & all_years$region== 'Australia')])
+australia_avg <- c(avg.2015, avg.2016, avg.2017, avg.2018, avg.2019)
+
+region_avgs <- data.frame(year, asia_avg, africa_avg, north_america_avg, south_america_avg, europe_avg, australia_avg)
+colnames(region_avgs) <- c('Year', region)
+```
+
+
+```{r, echo = FALSE, warning = FALSE, message = FALSE}
 ## UI
 # Use a fluid Bootstrap layout
 ui <- navbarPage(theme = shinytheme('readable'), "Distribution of Variables",
@@ -93,7 +173,7 @@ ui <- navbarPage(theme = shinytheme('readable'), "Distribution of Variables",
                                 p("'freedom': The extent to which the freedom to make choices contributes to the calculation of the Happiness Score"),
                                 p("'govt.currpt': The extent to which perception of corruption contributes to the Happiness Score"))),
             
-            navbarMenu("Happiness Factors",
+            navbarMenu("Plots",
                          
                          tabPanel("Histograms", fluid = TRUE,
                                   sidebarLayout(sidebarPanel(
@@ -101,20 +181,6 @@ ui <- navbarPage(theme = shinytheme('readable'), "Distribution of Variables",
                                                   choices = colnames(all_years[c(3:9, 11:26)]))),
                                   
                                   mainPanel(plotOutput("happinessPlot")))),
-                         
-                         tabPanel("Linear Models", fluid = TRUE,
-                                  sidebarLayout(sidebarPanel(
-                                      selectInput("cid5", "Select a Variable:", 
-                                                  choices = colnames(all_years[c(3:9, 11:26)]))),
-                                  
-                                  mainPanel(verbatimTextOutput("info"),
-                                  p("The skewness of score and economy are between -0.5 and 0.5, so we do not need to apply any transformations to it."),
-                                  p("Family is outside of the range, so we apply transformations- the Tukey's Ladder of Powers Transformation works best."),
-                                  p("Life.exp is barely within the accepted range. "),
-                                  p("Freedom is outside of the range. Again, the Tukey's Ladder of Powers Transformation works best."),
-                                  p("The Tukey Transformation works best on govt.corrupt."),
-                                  p("The square root transformation works best on generosity."),
-                                  verbatimTextOutput("info1")))),
                          
                          tabPanel("Rank Plots", fluid = TRUE,
                                   sidebarLayout(sidebarPanel(
@@ -136,7 +202,25 @@ ui <- navbarPage(theme = shinytheme('readable'), "Distribution of Variables",
                                                                   "2018" = 2018, "2019" = 2019))),
                                   mainPanel(plotlyOutput("happinessPlot3")))),
                         
-                        tabPanel("Correlations", plotOutput("happinessPlot4"), plotOutput("happinessPlot5"))
+                        tabPanel("Correlations", plotOutput("happinessPlot4"), plotOutput("happinessPlot5")),
+                       
+                        tabPanel("Averages", plotlyOutput("happinessPlot6"))),
+                       
+            navbarMenu("Models",
+                       
+                        tabPanel("Linear Models", fluid = TRUE,
+                                  sidebarLayout(sidebarPanel(
+                                      selectInput("cid5", "Select a Variable:", 
+                                                  choices = colnames(all_years[c(3:9, 11:26)]))),
+                                  
+                                  mainPanel(verbatimTextOutput("info"),
+                                  p("The skewness of score and economy are between -0.5 and 0.5, so we do not need to apply any transformations to it."),
+                                  p("Family is outside of the range, so we apply transformations- the Tukey's Ladder of Powers Transformation works best."),
+                                  p("Life.exp is barely within the accepted range. "),
+                                  p("Freedom is outside of the range. Again, the Tukey's Ladder of Powers Transformation works best."),
+                                  p("The Tukey Transformation works best on govt.corrupt."),
+                                  p("The square root transformation works best on generosity."),
+                                  verbatimTextOutput("info1"))))
             )
 )
 
@@ -231,20 +315,25 @@ server <- function(input, output) {
         samp <- all_years[sample_rows,]
         plot(samp[,2:8], col = "navy", main = "Matrix Scatterplot")
     })
+
+    output$happinessPlot6 <- renderPlotly({
+        fig <- plot_ly(region_avgs, x = ~year)
+        fig <- fig %>% add_trace( y = ~asia_avg, name = 'Asia', mode = 'lines')
+        fig <- fig %>% add_trace( y = ~africa_avg, name = 'Africa', mode = 'lines')
+        fig <- fig %>% add_trace( y = ~north_america_avg, name = 'North America', mode = 'lines')
+        fig <- fig %>% add_trace( y = ~south_america_avg, name = 'South America', mode = 'lines')
+        fig <- fig %>% add_trace( y = ~europe_avg, name = 'Europe', mode = 'lines')
+        fig <- fig %>% add_trace( y = ~australia_avg, name = 'Australia', mode = 'lines')
+    fig
+    })
+    
 }
 
 shinyApp(ui, server)
 ```
 
-
-
 ```{r}
-sample_rows <- sample(1:nrow(all_years),50)
-samp <- all_years[sample_rows,]
-plot(samp[,2:8], col = "navy", main = "Matrix Scatterplot")
-```
-
-```{r}
-model <- lm(rank ~ score + economy + life.exp + family, data = all_y
+model <- lm(rank ~ score + economy + life.exp + family, data = all_years)
+model
 summary(model)
 ```
