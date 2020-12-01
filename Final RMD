@@ -83,7 +83,7 @@ North_America <- c("Belize", "Canada", "Costa Rica", "Cuba", "Dominica", "Domini
 
 South_America <- c("Argentina", "Bolivia", "Brazil", "Chile", "Colombia", "Ecuador", "Guyana", "Paraguay", "Peru", "Suriname", "Uruguay", "Venezuela")
 
-Europe <- c("Albania", "Andorra", "Armenia", "Austria", "Azerbaijan", "Belarus", "Belgium", "Bosnia and Herzegovina", "Bulgaria", "Croatia", "Cyprus", "North Cyprus", "Northern Cyprus", "Czech Republic", "Denmark", "Estonia", "Finland", "France", "Georgia", "Germany", "Greece", "Hungary", "Iceland", "Ireland", "Italy", "Kosovo", "Latvia", "Liechtenstein", "Lithuania", "Luxembourg", "Macedonia", "Malta", "Moldova", "Monaco", "Montenegro", "Netherlands", "North Macedonia", "Norway", "Poland", "Portugal", "Romania", "Romania", "Russia", "San Marino", "Serbia", "Slovakia", "Slovenia", "Spain", "Sweden", "Switzerland", "Turkey", "Ukraine", "United Kingdom")
+Europe <- c("Albania", "Andorra", "Armenia", "Austria", "Azerbaijan", "Belarus", "Belgium", "Bosnia and Herzegovina", "Bulgaria", "Croatia", "Cyprus", "North Cyprus", "Northern Cyprus", "Czech Republic", "Denmark", "Estonia", "Finland", "France", "Georgia", "Germany", "Greece", "Hungary", "Iceland", "Ireland", "Italy", "Kosovo", "Latvia", "Liechtenstein", "Lithuania", "Luxembourg", "Macedonia", "Malta", "Moldova", "Monaco", "Montenegro", "Netherlands", "North Macedonia", "Norway", "Poland", "Portugal", "Romania", "San Marino", "Serbia", "Slovakia", "Slovenia", "Spain", "Sweden", "Switzerland", "Turkey", "Ukraine", "United Kingdom")
 
 Australia <- c("Australia", "New Zealand")
 
@@ -150,9 +150,66 @@ avg.2019 <- mean(all_years$score[which(all_years$year== 2019 & all_years$region=
 australia_avg <- c(avg.2015, avg.2016, avg.2017, avg.2018, avg.2019)
 
 region_avgs <- data.frame(year, asia_avg, africa_avg, north_america_avg, south_america_avg, europe_avg, australia_avg)
-colnames(region_avgs) <- c('Year', region)
+colnames(region_avgs) <- c('year', region)
+region_avgs$year <- as.factor(region_avgs$year)
 ```
 
+```{r, echo = FALSE, warning = FALSE, message = FALSE}
+region <- c("Asia", "Africa", "North America", "South America", "Europe", "Australia")
+year <- c(2015, 2016, 2017, 2018, 2019)
+
+# Asia Averages by Year
+avg.2015 <- mean(all_years$rank[which(all_years$year== 2015 & all_years$region== 'Asia')])
+avg.2016 <- mean(all_years$rank[which(all_years$year== 2016 & all_years$region== 'Asia')])
+avg.2017 <- mean(all_years$rank[which(all_years$year== 2017 & all_years$region== 'Asia')])
+avg.2018 <- mean(all_years$rank[which(all_years$year== 2018 & all_years$region== 'Asia')])
+avg.2019 <- mean(all_years$rank[which(all_years$year== 2019 & all_years$region== 'Asia')])
+asia_avg_rank <- c(avg.2015, avg.2016, avg.2017, avg.2018, avg.2019)
+
+# Africa Averages by Year
+avg.2015 <- mean(all_years$rank[which(all_years$year== 2015 & all_years$region== 'Africa')])
+avg.2016 <- mean(all_years$rank[which(all_years$year== 2016 & all_years$region== 'Africa')])
+avg.2017 <- mean(all_years$rank[which(all_years$year== 2017 & all_years$region== 'Africa')])
+avg.2018 <- mean(all_years$rank[which(all_years$year== 2018 & all_years$region== 'Africa')])
+avg.2019 <- mean(all_years$rank[which(all_years$year== 2019 & all_years$region== 'Africa')])
+africa_avg_rank <- c(avg.2015, avg.2016, avg.2017, avg.2018, avg.2019)
+
+# North America Averages by Year
+avg.2015 <- mean(all_years$rank[which(all_years$year== 2015 & all_years$region== 'North America')])
+avg.2016 <- mean(all_years$rank[which(all_years$year== 2016 & all_years$region== 'North America')])
+avg.2017 <- mean(all_years$rank[which(all_years$year== 2017 & all_years$region== 'North America')])
+avg.2018 <- mean(all_years$rank[which(all_years$year== 2018 & all_years$region== 'North America')])
+avg.2019 <- mean(all_years$rank[which(all_years$year== 2019 & all_years$region== 'North America')])
+north_america_avg_rank <- c(avg.2015, avg.2016, avg.2017, avg.2018, avg.2019)
+
+# South America Averages by Year
+avg.2015 <- mean(all_years$rank[which(all_years$year== 2015 & all_years$region== 'South America')])
+avg.2016 <- mean(all_years$rank[which(all_years$year== 2016 & all_years$region== 'South America')])
+avg.2017 <- mean(all_years$rank[which(all_years$year== 2017 & all_years$region== 'South America')])
+avg.2018 <- mean(all_years$rank[which(all_years$year== 2018 & all_years$region== 'South America')])
+avg.2019 <- mean(all_years$rank[which(all_years$year== 2019 & all_years$region== 'South America')])
+south_america_avg_rank <- c(avg.2015, avg.2016, avg.2017, avg.2018, avg.2019)
+
+# Europe Averages by Year
+avg.2015 <- mean(all_years$rank[which(all_years$year== 2015 & all_years$region== 'Europe')])
+avg.2016 <- mean(all_years$rank[which(all_years$year== 2016 & all_years$region== 'Europe')])
+avg.2017 <- mean(all_years$rank[which(all_years$year== 2017 & all_years$region== 'Europe')])
+avg.2018 <- mean(all_years$rank[which(all_years$year== 2018 & all_years$region== 'Europe')])
+avg.2019 <- mean(all_years$rank[which(all_years$year== 2019 & all_years$region== 'Europe')])
+europe_avg_rank <- c(avg.2015, avg.2016, avg.2017, avg.2018, avg.2019)
+
+# Australia Averages by Year
+avg.2015 <- mean(all_years$rank[which(all_years$year== 2015 & all_years$region== 'Australia')])
+avg.2016 <- mean(all_years$rank[which(all_years$year== 2016 & all_years$region== 'Australia')])
+avg.2017 <- mean(all_years$rank[which(all_years$year== 2017 & all_years$region== 'Australia')])
+avg.2018 <- mean(all_years$rank[which(all_years$year== 2018 & all_years$region== 'Australia')])
+avg.2019 <- mean(all_years$rank[which(all_years$year== 2019 & all_years$region== 'Australia')])
+australia_avg_rank <- c(avg.2015, avg.2016, avg.2017, avg.2018, avg.2019)
+
+region_avg_ranks <- data.frame(year, asia_avg_rank, africa_avg_rank, north_america_avg_rank, south_america_avg_rank, europe_avg_rank, australia_avg_rank)
+colnames(region_avg_ranks) <- c('year', region)
+region_avg_ranks$year <- as.factor(region_avg_ranks$year)
+```
 
 ```{r, echo = FALSE, warning = FALSE, message = FALSE}
 ## UI
@@ -194,12 +251,9 @@ ui <- navbarPage(theme = shinytheme('readable'), "Distribution of Variables",
                         
                          tabPanel("Score Plots", fluid = TRUE,
                                   sidebarLayout(sidebarPanel(
-                                      selectInput("cid3", "Select a Variable:", 
-                                                  choices = colnames(all_years[c(4:9)]),
-                                                  selected = 'economy'),
-                                      radioButtons("cid4", "Select a Year:",
-                                                   choices = list("2015" = 2015, "2016" = 2016, "2017" = 2017,
-                                                                  "2018" = 2018, "2019" = 2019))),
+                                    textInput("text2", "Enter a Specific Country:", 
+                                                value = 'United States')),
+                                    
                                   mainPanel(plotlyOutput("happinessPlot3")))),
                         
                         tabPanel("Correlations", plotOutput("happinessPlot4"), plotOutput("happinessPlot5")),
@@ -221,7 +275,22 @@ ui <- navbarPage(theme = shinytheme('readable'), "Distribution of Variables",
                                   p("The Tukey Transformation works best on govt.corrupt."),
                                   p("The square root transformation works best on generosity."),
                                   verbatimTextOutput("info1"))))
-            )
+            ),
+            
+            navbarMenu("Customizable",
+                       
+                       tabPanel("Scatter Plots", fluid = TRUE,
+                                sidebarLayout(sidebarPanel(
+                                
+                                  selectInput("cid3", "Select a Variable:", 
+                                              choices = colnames(all_years[c(4:9)]),
+                                              selected = 'economy'),
+                                  radioButtons("cid4", "Select a Year:",
+                                               choices = list("2015" = 2015, "2016" = 2016, "2017" = 2017,
+                                                              "2018" = 2018, "2019" = 2019))),
+                                  mainPanel(plotlyOutput('happinessPlot7'))))
+                       
+                                )
 )
 
 ## Server
@@ -268,40 +337,88 @@ server <- function(input, output) {
     })
     
     output$happinessPlot2 <- renderPlotly({
-        happy_usa <- filter(all_years, country == input$text)
-        titl <- paste(input$text, "Rank by Year", sep = " ")
-        
-        fig2 <- plot_ly(happy_usa, x = ~year, y = ~rank, type = 'scatter', 
-                mode = 'lines', color = 'red',
-                text = ~paste("Score: ", score))
+      happy_usa <- filter(all_years, country == input$text)
+      
+      if(input$text %in% Asia){ continent <- region_avg_ranks$Asia
+                                y <- 'Asia'}
+      if(input$text %in% Africa){ continent <- region_avg_ranks$Africa
+                                  y <- 'Africa'}
+      if(input$text %in% North_America){ continent <- region_avg_ranks$`North America`
+                                         y <- 'North America'}
+      if(input$text %in% South_America){ continent <- region_avg_ranks$`South America`
+                                         y <- 'South America'}
+      if(input$text %in% Europe){ continent <- region_avg_ranks$Europe
+                                  y <- 'Europe'}
+      if(input$text %in% Australia){ continent <- region_avg_ranks$Australia
+                                     y <- 'Australia'}
 
-        fig2 <- fig2 %>% layout(title = titl,
+      avg_ranks_spec <- data.frame(continent, region_avg_ranks$year)
+
+      colnames(avg_ranks_spec) <- c("avg", "year")
+
+      new_df <- inner_join(happy_usa, avg_ranks_spec)
+
+      titl <- paste(input$text, "Rank by Year", sep = " ")
+        
+      fig2 <- plot_ly(new_df, x = ~year, y = ~rank, 
+                      type = 'scatter',
+                      mode = 'lines', 
+                      color = 'red',
+                      name = input$text)
+
+      fig2 <- fig2 %>% layout(title = titl,
                         xaxis = list(title = NA),
-                        yaxis = list(title = "Rank", autorange = 'reversed'))
-        fig2
+                        yaxis = list(title = "Rank", autorange =
+                                       'reversed'))
+      fig2 <- fig2 %>% add_trace(y = ~new_df$avg, 
+                                 name = paste(y, 'Avg', sep = ' '), 
+                                 mode = 'lines', 
+                                 line = list(dash = 'dash'))
+
+      fig2
     })
     
     output$happinessPlot3 <- renderPlotly({
-        y <- filter(all_years, year == input$cid4)
-        y <- y[,c(1:9)]
-        x <- y[,input$cid3]
-        colnames(x) <- 'input'
-        dfx <- cbind(x,y)
-        titl <- paste(input$cid3, "vs. Score", sep = " ")
+      
+      happy_usa <- filter(all_years, country == input$text2)
+      
+      if(input$text2 %in% Asia){ continent <- region_avgs$Asia
+                                x <- 'Asia'}
+      if(input$text2 %in% Africa){ continent <- region_avgs$Africa
+                                  x <- 'Africa'}
+      if(input$text2 %in% North_America){ continent <- region_avgs$`North America`
+                                         x <- 'North America'}
+      if(input$text2 %in% South_America){ continent <- region_avgs$`South America`
+                                         x <- 'South America'}
+      if(input$text2 %in% Europe){ continent <- region_avgs$Europe
+                                  x <- 'Europe'}
+      if(input$text2 %in% Australia){ continent <- region_avgs$Australia
+                                     x <- 'Australia'}
+
+      avg_scores_spec <- data.frame(continent, region_avgs$year)
+
+      colnames(avg_scores_spec) <- c("avg", "year")
+
+      new_df <- inner_join(happy_usa, avg_scores_spec)
+
+      titl <- paste(input$text, "Score by Year", sep = " ")
         
-        fig3 <- plot_ly(dfx, x = ~input, y = ~rank, color = ~country,
-                marker = list(size = 7, width = 1),
-                text = ~ paste("Rank: ", rank, '<br>', "Score: ", score, '<br>',
-                               'Economy: ', economy, '<br>', 'Family: ', family,
-                               '<br>', 'Life Expectancy: ', life.exp, '<br>',
-                               'Freedom: ', freedom, '<br>', "Gov't. Corruption: ",
-                               govt.corrupt, '<br>', 'Generosity: ', generosity))
+      fig3 <- plot_ly(new_df, x = ~year, y = ~score, 
+                      type = 'scatter',
+                      mode = 'lines', 
+                      color = 'red',
+                      name = input$text2)
 
-        fig3 <- fig3 %>% layout(Title = titl,
-                       yaxis = list(title = "Overall Rank"),
-                       xaxis = list(title = input$cid3))
+      fig3 <- fig3 %>% layout(title = titl,
+                        xaxis = list(title = NA),
+                        yaxis = list(title = "Score", autorange =
+                                       'reversed'))
+      fig3 <- fig3 %>% add_trace(y = ~new_df$avg, 
+                                 name = paste(x, 'Avg', sep = ' '), 
+                                 mode = 'lines', 
+                                 line = list(dash = 'dash'))
 
-        fig3
+      fig3
     })
     
     output$happinessPlot4 <- renderPlot({
@@ -324,7 +441,32 @@ server <- function(input, output) {
         fig <- fig %>% add_trace( y = ~south_america_avg, name = 'South America', mode = 'lines')
         fig <- fig %>% add_trace( y = ~europe_avg, name = 'Europe', mode = 'lines')
         fig <- fig %>% add_trace( y = ~australia_avg, name = 'Australia', mode = 'lines')
-    fig
+        fig
+    })
+    
+    output$happinessPlot7 <- renderPlotly({
+        y <- filter(all_years, year == input$cid4)
+        y <- y[,c(1:9)]
+        x <- y[,input$cid3]
+        colnames(x) <- 'input'
+        
+        dfx <- cbind(x,y)
+        
+        titl <- paste(input$cid3, "vs. Score", sep = " ")
+        
+        fig3 <- plot_ly(dfx, x = ~input, y = ~rank, color = ~country,
+                marker = list(size = 7, width = 1),
+                text = ~ paste("Rank: ", rank, '<br>', "Score: ", score, '<br>',
+                               'Economy: ', economy, '<br>', 'Family: ', family,
+                               '<br>', 'Life Expectancy: ', life.exp, '<br>',
+                               'Freedom: ', freedom, '<br>', "Gov't. Corruption: ",
+                               govt.corrupt, '<br>', 'Generosity: ', generosity))
+
+        fig3 <- fig3 %>% layout(Title = titl,
+                       yaxis = list(title = "Overall Rank"),
+                       xaxis = list(title = input$cid3))
+
+        fig3
     })
     
 }
@@ -332,8 +474,10 @@ server <- function(input, output) {
 shinyApp(ui, server)
 ```
 
-```{r}
-model <- lm(rank ~ score + economy + life.exp + family, data = all_years)
-model
-summary(model)
-```
+
+
+
+
+
+
+
