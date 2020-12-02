@@ -21,6 +21,14 @@ library(corrplot)
 library(shinythemes)
 library(readxl)
 library(GGally)
+library(maptree)
+library(rpart)
+library(party)
+library(partykit)
+library(gains)
+library(faraway)
+library(car)
+library(MuMIn)
 ```
 
 ```{r, echo = FALSE, warning = FALSE, message = FALSE}
@@ -95,6 +103,24 @@ all_years <- all_years %>%
                                 ifelse(country %in% Europe, "Europe",
                                   ifelse(country %in% Australia, "Australia",
 "Other")))))))
+
+
+
+
+
+#Sampling for decision tree
+set.seed(123)
+sample = sample_n(all_years, 624)
+test = setdiff(all_years, sample)
+
+write.csv(sample, file="final_sampledata.csv")
+write.csv(test, file="final_testdata.csv")
+
+sample <- read.csv("final_sampledata.csv")
+test <- read.csv("final_testdata.csv")
+
+sample$region <- as.factor(sample$region)
+test$region <- as.factor(test$region)
 ```
 
 ```{r, echo = FALSE, warning = FALSE, message = FALSE}
@@ -274,7 +300,21 @@ ui <- navbarPage(theme = shinytheme('readable'), "Distribution of Variables",
                                   p("Freedom is outside of the range. Again, the Tukey's Ladder of Powers Transformation works best."),
                                   p("The Tukey Transformation works best on govt.corrupt."),
                                   p("The square root transformation works best on generosity."),
-                                  verbatimTextOutput("info1"))))
+                                  verbatimTextOutput("info1")))),
+                       
+                       tabPanel("Decision Tree", fluid = TRUE,
+                                  mainPanel(
+                                    p("A decision tree was built to predict happiness in countries. A random sample of about 80% of the rows was used to build the model."),
+                                    p("Below is a summary of the model. Note the Variable Importance; in order from most important to least important variables, we have economy, life.exp, region, family, freedom, govt.corrupt, generosity."),
+                                    verbatimTextOutput("info2"),
+                                    p("Below is the decision tree. To decipher the tree, we will look at the top as an example. First, if economy's value is greater than 1.061885, we go left. If economy's value is less than 1.061885, then we go right. If we we were to go right, our next decision is whether life.exp is less than or greater than 0.4655045275. We see that 354 of the 624 original rows went right. If we go right again (i.e., life.exp is less than 0.4676095275), there are 160 rows remaining. These rows are predicted to have an average rank of 129.11. The rest of the rows go through other similar calculations throughout the decision tree."),
+                                    plotOutput(outputId = "happinessPlot7", height = "900px", width = "1700px"),
+                                    p("Now, we will use this tree to predict the rankings of the remaining 20% of the rows. On the table below, the Mean Resp column represents the means of the observed rows (20%), while the Mean Model Score represents the predicted average from the tree model. These different means are in order from right to left on the tree (or descending order on the table). So, for example, (looking at the top row) the average rank of the observed rows on Node 7 was 126.65, and my model predicted the average rank would be 129.11. Likewise, (looking at the bottom row), the average rank of the observed rows on Node 1 was 19.38, and my model predicted the average rank would be 20.07."),
+                                    verbatimTextOutput("info3"),
+                                    p("The means are visually represented on the plot below:"),
+                                    plotOutput("happinessPlot8")
+                  
+                       ))
             ),
             
             navbarMenu("Customizable",
@@ -288,7 +328,7 @@ ui <- navbarPage(theme = shinytheme('readable'), "Distribution of Variables",
                                   radioButtons("cid4", "Select a Year:",
                                                choices = list("2015" = 2015, "2016" = 2016, "2017" = 2017,
                                                               "2018" = 2018, "2019" = 2019))),
-                                  mainPanel(plotlyOutput('happinessPlot7'))))
+                                  mainPanel(plotlyOutput('happinessPlot9'))))
                        
                                 )
 )
@@ -444,7 +484,47 @@ server <- function(input, output) {
         fig
     })
     
-    output$happinessPlot7 <- renderPlotly({
+    output$info2 <- renderPrint({
+      
+      df_tree <- sample[, c(3, 5:10, 28)]
+      tree_model <- rpart(rank ~ economy + family + life.exp + freedom + govt.corrupt + generosity + region, data = df_tree)
+      
+      summary(tree_model)
+    })
+    
+    output$happinessPlot7 <- renderPlot({
+      
+      df_tree <- sample[, c(3, 5:10, 28)]
+      tree_model <- rpart(rank ~ economy + family + life.exp + freedom + govt.corrupt + generosity + region, data = df_tree)
+      
+      draw.tree(tree_model, cex=1.3, 
+           nodeinfo=TRUE, 
+           cases="obs",
+           digits=2, print.levels=TRUE,
+           new=TRUE)
+    }, height = 900, width = 1700)
+    
+      output$info3 <- renderPrint({
+      
+      df_tree <- sample[, c(3, 5:10, 28)]
+      tree_model <- rpart(rank ~ economy + family + life.exp + freedom + govt.corrupt + generosity + region, data = df_tree)
+      
+      tree_pred <- (predict(tree_model, test))
+      tree_gains <- gains(test$rank, tree_pred, groups = 7)
+      tree_gains
+    })
+    
+    output$happinessPlot8 <- renderPlot({
+      
+      df_tree <- sample[, c(3, 5:10, 28)]
+      tree_model <- rpart(rank ~ economy + family + life.exp + freedom + govt.corrupt + generosity + region, data = df_tree)
+      
+      tree_pred <- (predict(tree_model, test))
+      tree_gains <- gains(test$rank, tree_pred, groups = 8)
+      plot(tree_gains)
+    })
+    
+    output$happinessPlot9 <- renderPlotly({
         y <- filter(all_years, year == input$cid4)
         y <- y[,c(1:9)]
         x <- y[,input$cid3]
@@ -473,11 +553,3 @@ server <- function(input, output) {
 
 shinyApp(ui, server)
 ```
-
-
-
-
-
-
-
-
