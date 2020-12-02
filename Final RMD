@@ -398,14 +398,19 @@ server <- function(input, output) {
       
       if(input$text %in% Asia){ continent <- region_avg_ranks$Asia
                                 y <- 'Asia'}
+                                
       if(input$text %in% Africa){ continent <- region_avg_ranks$Africa
                                   y <- 'Africa'}
+                                  
       if(input$text %in% North_America){ continent <- region_avg_ranks$`North America`
                                          y <- 'North America'}
+                                         
       if(input$text %in% South_America){ continent <- region_avg_ranks$`South America`
                                          y <- 'South America'}
+                                         
       if(input$text %in% Europe){ continent <- region_avg_ranks$Europe
                                   y <- 'Europe'}
+                                  
       if(input$text %in% Australia){ continent <- region_avg_ranks$Australia
                                      y <- 'Australia'}
 
@@ -441,16 +446,22 @@ server <- function(input, output) {
       
       if(input$text2 %in% Asia){ continent <- region_avgs$Asia
                                 x <- 'Asia'}
+                                
       if(input$text2 %in% Africa){ continent <- region_avgs$Africa
                                   x <- 'Africa'}
+                                  
       if(input$text2 %in% North_America){ continent <- region_avgs$`North America`
                                          x <- 'North America'}
+                                         
       if(input$text2 %in% South_America){ continent <- region_avgs$`South America`
                                          x <- 'South America'}
+                                         
       if(input$text2 %in% Europe){ continent <- region_avgs$Europe
-                                  x <- 'Europe'}
+                                   x <- 'Europe'}
+                                  
       if(input$text2 %in% Australia){ continent <- region_avgs$Australia
-                                     x <- 'Australia'}
+                                      x <- 'Australia'}
+                                     
 
       avg_scores_spec <- data.frame(continent, region_avgs$year)
 
@@ -469,6 +480,7 @@ server <- function(input, output) {
       fig3 <- fig3 %>% layout(title = titl,
                         xaxis = list(title = NA),
                         yaxis = list(title = "Score"))
+                        
       fig3 <- fig3 %>% add_trace(y = ~new_df$avg, 
                                  name = paste(x, 'Avg', sep = ' '), 
                                  mode = 'lines', 
@@ -480,23 +492,27 @@ server <- function(input, output) {
     output$happinessPlot4 <- renderPlot({
         dfx <- all_years[,c(2:9)]
         M <- cor(dfx)
+        
         corrplot(M, method = 'number')
     })
     
     output$happinessPlot5 <- renderPlot({
         sample_rows <- sample(1:nrow(all_years),50)
         samp <- all_years[sample_rows,]
+        
         plot(samp[,2:8], col = "navy", main = "Matrix Scatterplot")
     })
 
     output$happinessPlot6 <- renderPlotly({
       fig <- plot_ly(region_avgs, x = ~year)
+      
       fig <- fig %>% add_trace( y = ~asia_avg, name = 'Asia', type = 'scatter', mode = 'lines')
       fig <- fig %>% add_trace( y = ~africa_avg, name = 'Africa', type = 'scatter', mode = 'lines')
       fig <- fig %>% add_trace( y = ~north_america_avg, name = 'North America', type = 'scatter', mode = 'lines')
       fig <- fig %>% add_trace( y = ~south_america_avg, name = 'South America', type = 'scatter', mode = 'lines')
       fig <- fig %>% add_trace( y = ~europe_avg, name = 'Europe', type = 'scatter', mode = 'lines')
       fig <- fig %>% add_trace( y = ~australia_avg, name = 'Australia', type = 'scatter', mode = 'lines')
+      
       fig <- fig %>% layout(title = "Average Happiness Score by Continent",
                             xaxis = list(title = "Year"),
                             yaxis = list(title = "Average Score"))
@@ -570,29 +586,16 @@ server <- function(input, output) {
       fig <- fig %>% add_trace( y = ~south_america_avg_rank, name = 'South America', type = 'scatter', mode = 'lines')
       fig <- fig %>% add_trace( y = ~europe_avg_rank, name = 'Europe', type = 'scatter', mode = 'lines')
       fig <- fig %>% add_trace( y = ~australia_avg_rank, name = 'Australia', type = 'scatter', mode = 'lines')
+      
       fig <- fig %>% layout(title = "Average Rank by Continent",
                             xaxis = list(title = "Year"),
                             yaxis = list(title = "Average Rank"))
-fig
+       
+      fig
     })
     
 }
 
 shinyApp(ui, server)
-```
-
-
-```{r}
-fig <- plot_ly(region_avg_ranks, x = ~year)
-fig <- fig %>% add_trace( y = ~asia_avg_rank, name = 'Asia', type = 'scatter', mode = 'lines')
-fig <- fig %>% add_trace( y = ~africa_avg_rank, name = 'Africa', type = 'scatter', mode = 'lines')
-fig <- fig %>% add_trace( y = ~north_america_avg_rank, name = 'North America', type = 'scatter', mode = 'lines')
-fig <- fig %>% add_trace( y = ~south_america_avg_rank, name = 'South America', type = 'scatter', mode = 'lines')
-fig <- fig %>% add_trace( y = ~europe_avg_rank, name = 'Europe', type = 'scatter', mode = 'lines')
-fig <- fig %>% add_trace( y = ~australia_avg_rank, name = 'Australia', type = 'scatter', mode = 'lines')
-fig <- fig %>% layout(title = "Average Rank by Continent",
-                      xaxis = list(title = "Year"),
-                      yaxis = list(title = "Average Rank"))
-fig
 ```
 
