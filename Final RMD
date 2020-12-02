@@ -284,7 +284,7 @@ ui <- navbarPage(theme = shinytheme('readable'), "Distribution of Variables",
                         
                         tabPanel("Correlations", plotOutput("happinessPlot4"), plotOutput("happinessPlot5")),
                        
-                        tabPanel("Averages", plotlyOutput("happinessPlot6"))),
+                        tabPanel("Averages", plotlyOutput("happinessPlot6"), br(), plotlyOutput("happinessPlot10"))),
                        
             navbarMenu("Models",
                        
@@ -321,16 +321,33 @@ ui <- navbarPage(theme = shinytheme('readable'), "Distribution of Variables",
                        
                        tabPanel("Scatter Plots", fluid = TRUE,
                                 sidebarLayout(sidebarPanel(
-                                
-                                  selectInput("cid3", "Select a Variable:", 
-                                              choices = colnames(all_years[c(4:9)]),
-                                              selected = 'economy'),
+                                  
+                                  #Generate x-axis
+                                  selectInput(inputId = "x",
+                                    label = "X-axis:",
+                                    choices = colnames(all_years[c(2:9)]),
+                                    selected = colnames(all_years[3])),
+            
+                                  #Generate y-axis
+                                  selectInput(inputId = "y",
+                                    label = "Y-axis:",
+                                    choices = colnames(all_years[c(2:9)]),
+                                    selected = colnames(all_years[4])),
+                                  
+                                  #Year Button
                                   radioButtons("cid4", "Select a Year:",
                                                choices = list("2015" = 2015, "2016" = 2016, "2017" = 2017,
-                                                              "2018" = 2018, "2019" = 2019))),
-                                  mainPanel(plotlyOutput('happinessPlot9'))))
+                                                              "2018" = 2018, "2019" = 2019)),
+                                  
+                                  #Continent Checkbox
+                                  checkboxGroupInput(inputId = "continentboxid",
+                                    label = "Choose Continent(s):",
+                                    choices = list("Africa", "Asia", "Australia", "Europe", "North America", "South America"),
+                                    selected = list("Africa", "Asia", "Australia", "Europe", "North America", "South America"))),
+                                  
+                                  mainPanel(plotlyOutput('happinessPlot9')))))
                        
-                                )
+                                
 )
 
 ## Server
@@ -398,7 +415,7 @@ server <- function(input, output) {
 
       new_df <- inner_join(happy_usa, avg_ranks_spec)
 
-      titl <- paste(input$text, "Rank by Year", sep = " ")
+      titl <- paste(input$text, "Rank by Year Against", y, "Average", sep = " ")
         
       fig2 <- plot_ly(new_df, x = ~year, y = ~rank, 
                       type = 'scatter',
@@ -441,7 +458,7 @@ server <- function(input, output) {
 
       new_df <- inner_join(happy_usa, avg_scores_spec)
 
-      titl <- paste(input$text, "Score by Year", sep = " ")
+      titl <- paste(input$text2, "Score by Year Against", x, "Average", sep = " ")
         
       fig3 <- plot_ly(new_df, x = ~year, y = ~score, 
                       type = 'scatter',
@@ -451,8 +468,7 @@ server <- function(input, output) {
 
       fig3 <- fig3 %>% layout(title = titl,
                         xaxis = list(title = NA),
-                        yaxis = list(title = "Score", autorange =
-                                       'reversed'))
+                        yaxis = list(title = "Score"))
       fig3 <- fig3 %>% add_trace(y = ~new_df$avg, 
                                  name = paste(x, 'Avg', sep = ' '), 
                                  mode = 'lines', 
@@ -474,14 +490,17 @@ server <- function(input, output) {
     })
 
     output$happinessPlot6 <- renderPlotly({
-        fig <- plot_ly(region_avgs, x = ~year)
-        fig <- fig %>% add_trace( y = ~asia_avg, name = 'Asia', mode = 'lines')
-        fig <- fig %>% add_trace( y = ~africa_avg, name = 'Africa', mode = 'lines')
-        fig <- fig %>% add_trace( y = ~north_america_avg, name = 'North America', mode = 'lines')
-        fig <- fig %>% add_trace( y = ~south_america_avg, name = 'South America', mode = 'lines')
-        fig <- fig %>% add_trace( y = ~europe_avg, name = 'Europe', mode = 'lines')
-        fig <- fig %>% add_trace( y = ~australia_avg, name = 'Australia', mode = 'lines')
-        fig
+      fig <- plot_ly(region_avgs, x = ~year)
+      fig <- fig %>% add_trace( y = ~asia_avg, name = 'Asia', type = 'scatter', mode = 'lines')
+      fig <- fig %>% add_trace( y = ~africa_avg, name = 'Africa', type = 'scatter', mode = 'lines')
+      fig <- fig %>% add_trace( y = ~north_america_avg, name = 'North America', type = 'scatter', mode = 'lines')
+      fig <- fig %>% add_trace( y = ~south_america_avg, name = 'South America', type = 'scatter', mode = 'lines')
+      fig <- fig %>% add_trace( y = ~europe_avg, name = 'Europe', type = 'scatter', mode = 'lines')
+      fig <- fig %>% add_trace( y = ~australia_avg, name = 'Australia', type = 'scatter', mode = 'lines')
+      fig <- fig %>% layout(title = "Average Happiness Score by Continent",
+                            xaxis = list(title = "Year"),
+                            yaxis = list(title = "Average Score"))
+      fig
     })
     
     output$info2 <- renderPrint({
@@ -520,36 +539,60 @@ server <- function(input, output) {
       tree_model <- rpart(rank ~ economy + family + life.exp + freedom + govt.corrupt + generosity + region, data = df_tree)
       
       tree_pred <- (predict(tree_model, test))
-      tree_gains <- gains(test$rank, tree_pred, groups = 8)
+      tree_gains <- gains(test$rank, tree_pred, groups = 7)
       plot(tree_gains)
     })
     
     output$happinessPlot9 <- renderPlotly({
-        y <- filter(all_years, year == input$cid4)
-        y <- y[,c(1:9)]
-        x <- y[,input$cid3]
-        colnames(x) <- 'input'
+      
+        data <- all_years[, c(1:10, 27)]
+        y1 <- filter(data, year == input$cid4)
+        y1 <- filter(y1, region %in% input$continentboxid)
         
-        dfx <- cbind(x,y)
+        x1 <- y1[, input$x]
+        colnames(x1) <- 'xinput'
         
-        titl <- paste(input$cid3, "vs. Score", sep = " ")
+        x2 <- y1[, input$y]
+        colnames(x2) <- 'yinput'
         
-        fig3 <- plot_ly(dfx, x = ~input, y = ~rank, color = ~country,
-                marker = list(size = 7, width = 1),
-                text = ~ paste("Rank: ", rank, '<br>', "Score: ", score, '<br>',
-                               'Economy: ', economy, '<br>', 'Family: ', family,
-                               '<br>', 'Life Expectancy: ', life.exp, '<br>',
-                               'Freedom: ', freedom, '<br>', "Gov't. Corruption: ",
-                               govt.corrupt, '<br>', 'Generosity: ', generosity))
-
-        fig3 <- fig3 %>% layout(Title = titl,
-                       yaxis = list(title = "Overall Rank"),
-                       xaxis = list(title = input$cid3))
-
-        fig3
+        dfx <- cbind(y1, x1, x2)
+        
+        plot1 <- plot_ly(dfx, x = ~xinput, y = ~yinput, color = ~country)
+        plot1 <- plot1 %>% layout(xaxis = list(title = input$x), yaxis = list(title = input$y))
+        plot1
+    })
+    
+    output$happinessPlot10 <- renderPlotly({
+      fig <- plot_ly(region_avg_ranks, x = ~year)
+      fig <- fig %>% add_trace( y = ~asia_avg_rank, name = 'Asia', type = 'scatter', mode = 'lines')
+      fig <- fig %>% add_trace( y = ~africa_avg_rank, name = 'Africa', type = 'scatter', mode = 'lines')
+      fig <- fig %>% add_trace( y = ~north_america_avg_rank, name = 'North America', type = 'scatter', mode = 'lines')
+      fig <- fig %>% add_trace( y = ~south_america_avg_rank, name = 'South America', type = 'scatter', mode = 'lines')
+      fig <- fig %>% add_trace( y = ~europe_avg_rank, name = 'Europe', type = 'scatter', mode = 'lines')
+      fig <- fig %>% add_trace( y = ~australia_avg_rank, name = 'Australia', type = 'scatter', mode = 'lines')
+      fig <- fig %>% layout(title = "Average Rank by Continent",
+                            xaxis = list(title = "Year"),
+                            yaxis = list(title = "Average Rank"))
+fig
     })
     
 }
 
 shinyApp(ui, server)
 ```
+
+
+```{r}
+fig <- plot_ly(region_avg_ranks, x = ~year)
+fig <- fig %>% add_trace( y = ~asia_avg_rank, name = 'Asia', type = 'scatter', mode = 'lines')
+fig <- fig %>% add_trace( y = ~africa_avg_rank, name = 'Africa', type = 'scatter', mode = 'lines')
+fig <- fig %>% add_trace( y = ~north_america_avg_rank, name = 'North America', type = 'scatter', mode = 'lines')
+fig <- fig %>% add_trace( y = ~south_america_avg_rank, name = 'South America', type = 'scatter', mode = 'lines')
+fig <- fig %>% add_trace( y = ~europe_avg_rank, name = 'Europe', type = 'scatter', mode = 'lines')
+fig <- fig %>% add_trace( y = ~australia_avg_rank, name = 'Australia', type = 'scatter', mode = 'lines')
+fig <- fig %>% layout(title = "Average Rank by Continent",
+                      xaxis = list(title = "Year"),
+                      yaxis = list(title = "Average Rank"))
+fig
+```
+
